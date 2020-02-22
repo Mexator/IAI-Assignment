@@ -8,20 +8,20 @@ run:-
 start_search():-
     start_search(0,[]).
 
-start_search(Attempt,Turn):-
+start_search(Attempt,TurnsList):-
     max_attempts(Max), Attempt < Max,
     format('Attempt number ~a:\n',Attempt),
     
-    random_search(),!,
-    
+    random_search(TurnsList),!,
+
     NewAttempt is Attempt + 1,
-    start_search(NewAttempt,Turn).
+    start_search(NewAttempt,[]).
 
-random_search():-
+random_search(TurnsList):-
     start_pos(X,Y),
-    random_step(X,Y,0).
+    random_step(X,Y,TurnsList).
 
-random_step(X,Y,Turn):-
+random_step(X,Y,TurnsList):-
     /*
     * Here R is binded to action that agent will perform:
     * 0 - go up (negative y)
@@ -36,12 +36,18 @@ random_step(X,Y,Turn):-
     (
         % Loose condition
         o(X,Y),
-        format('Collision with orc at turn ~a\n', Turn)
+        append(TurnsList,[[X,Y]],NewTurnsList),
+        length(TurnsList, Turn),
+        format('Collision with orc at turn ~a\n', Turn),
+        format('List of turns: ~w\n', [NewTurnsList])
     );
     (
         % Win condition
         t(X,Y),
-        format('Win in ~a turns\n', Turn)
+        append(TurnsList,[[X,Y]],NewTurnsList),
+        length(TurnsList, Turn),
+        format('Win in ~a turns\n', Turn),
+        format('List of turns:~w\n', [NewTurnsList])
     );
     % Ordinary turn
     random_between(0, 3, R),
@@ -51,7 +57,7 @@ random_step(X,Y,Turn):-
         R==2 -> (NewY is Y+1, NewX is X);
         R==3 -> (NewY is Y, NewX is X-1)
     ),
-    NewTurn is Turn + 1,
+    append(TurnsList,[[X,Y]],NewTurnsList),
     % If agent collides with the wall, retry the turn
-    (inBoundaries(NewX,NewY) -> random_step(NewX,NewY,NewTurn);
-         random_step(X,Y,Turn)).
+    (inBoundaries(NewX,NewY) -> random_step(NewX,NewY,NewTurnsList);
+         random_step(X,Y,TurnsList)).
