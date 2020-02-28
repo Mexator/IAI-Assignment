@@ -16,7 +16,7 @@ run:-
     currentBestPath(Best),
     length(Best, Len),
     (Len == 0 -> format('Path was not found with ~a attempts',Max);
-    format('Best path in ~a attempts: \n ~w',[Max,Best])).
+    format('Best path with len ~a was found in ~a attempts: \n ~w',[Len,Max,Best])).
 
 start_search():-
     start_search(0).

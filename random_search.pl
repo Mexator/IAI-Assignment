@@ -17,7 +17,7 @@ random_step(X,Y,TurnsList):-
     * 7 - pass left
     */
     (
-        % Loose condition
+        % Loose condition #1 (step at cell with orc)
         o(X,Y),
         append(TurnsList,[[X,Y]],NewTurnsList),
         length(TurnsList, Turn),
@@ -37,14 +37,39 @@ random_step(X,Y,TurnsList):-
         assert(lastPath(NewTurnsList))
     );
     % Ordinary turn
-    random_between(0, 3, R),
+
+    random_between(0, 7, R),
     (
-        R==0 -> (NewY is Y-1, NewX is X);
-        R==1 -> (NewY is Y, NewX is X+1);
-        R==2 -> (NewY is Y+1, NewX is X);
-        R==3 -> (NewY is Y, NewX is X-1)
+        (R==0, (NewY is Y-1, NewX is X  , Pass is -1));
+        (R==1, (NewY is Y  , NewX is X+1, Pass is -1));
+        (R==2, (NewY is Y+1, NewX is X  , Pass is -1));
+        (R==3, (NewY is Y  , NewX is X-1, Pass is -1));
+        (R==4, (NewY is Y  , NewX is X  , Pass is  0));
+        (R==5, (NewY is Y  , NewX is X  , Pass is  1));
+        (R==6, (NewY is Y  , NewX is X  , Pass is  2));
+        (R==7, (NewY is Y  , NewX is X  , Pass is  3))
     ),
-    append(TurnsList,[[X,Y]],NewTurnsList),
     % If agent collides with the wall, retry the turn
-    (inBoundaries(NewX,NewY) -> random_step(NewX,NewY,NewTurnsList);
-         random_step(X,Y,TurnsList)).
+    (R < 4,
+        (
+        append(TurnsList,[[X,Y]],NewTurnsList),
+        inBoundaries(NewX,NewY), 
+        random_step(NewX,NewY,NewTurnsList);
+        random_step(X,Y,TurnsList)
+        );
+        (
+            pass(NewX,NewY,Pass,PassedX,PassedY),
+            (
+                append(TurnsList,[[X,Y,"Pass",Pass]],NewTurnsList),
+                write("\ngood pass\n"),
+                random_step(PassedX,PassedY,NewTurnsList)
+            );
+            (
+                append(TurnsList,[[X,Y,"Pass",Pass]],NewTurnsList),
+                length(TurnsList, Turn),
+                format('Bad pass at turn ~a\n', Turn),
+                % Update fact about solution found
+                retractall(lastPath(_)),
+                assert(lastPath(NewTurnsList))
+            )
+        )).  
