@@ -1,13 +1,10 @@
 :-["input.pl"].
-% Predicates to indicate different types of terrain
+% This file contains all general-purpose predicates that can be used 
+% in different search algorithms
 cellFree(X,Y):-
     not(h(X,Y)),
     not(o(X,Y)),
     not(t(X,Y)).
-
-passable(X,Y):-
-    cellFree(X,Y);
-    t(X,Y).
 
 inBoundaries(X,Y):-
     size(SizeX, SizeY),
@@ -29,13 +26,17 @@ pass(X,Y,Direction,HumanX,HumanY):-
     not(o(X,Y)), 
     inBoundaries(X,Y),
     (
+        % Wrong pass direction - fail
         (Direction==0, NewY is Y-1, NewX is X);
         (Direction==1, NewY is Y, NewX is X+1);
         (Direction==2, NewY is Y+1, NewX is X);
-        (Direction==3, NewY is Y, NewX is X-1)
+        (Direction==3, NewY is Y, NewX is X-1);
+        fail
     ),
     (
         (
+            % If we met human along the line of pass, pass is successful 
+            % and coordinates of human are bounded to HumanX and HumanY
             h(NewX,NewY),
             HumanX is NewX,
             HumanY is NewY

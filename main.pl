@@ -1,7 +1,7 @@
 :-["draw_field.pl","random_search.pl"].
 
 % Random search-specific predicates
-:-dynamic([currentBestPath/1,lastPath/1]).
+:-dynamic([currentBestPath/1]).
 
 run:-
     retractall(lastPath(_)),
@@ -28,10 +28,9 @@ start_search(Attempt):-
     max_attempts(Max), Attempt < Max,
     format('Attempt number ~a:\n',Attempt),
     
-    random_search(),!,
-    lastPath(Path),!,
+    random_search(Path),!,
     format('List of turns: ~w\n', [Path]),
-    updateBest(),!,
+    updateBest(Path),!,
 
     NewAttempt is Attempt + 1,
     start_search(NewAttempt).
@@ -42,8 +41,7 @@ isWinning(Path):-
     nth0(1,Element,Y),
     t(X,Y).
 
-updateBest():- 
-    lastPath(CurPath),
+updateBest(CurPath):- 
     currentBestPath(BestPath),
     length(CurPath, CurLenght),
     length(BestPath, BestLength),

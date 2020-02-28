@@ -1,10 +1,10 @@
 :-["heuristics.pl"].
 
-random_search():-
+random_search(Path):-
     start_pos(X,Y),
-    random_step(X,Y,[]).
+    random_step(X,Y,[],Path).
 
-random_step(X,Y,TurnsList):-
+random_step(X,Y,TurnsList,FinalPath):-
     /*
     * Here R is binded to action that agent will perform:
     * 0 - go up (negative y)
@@ -22,9 +22,8 @@ random_step(X,Y,TurnsList):-
         append(TurnsList,[[X,Y]],NewTurnsList),
         length(TurnsList, Turn),
         format('Collision with orc at turn ~a\n', Turn),
-        % Update fact about solution found
-        retractall(lastPath(_)),
-        assert(lastPath(NewTurnsList))
+
+        FinalPath = NewTurnsList
     );
     (
         % Win condition
@@ -32,9 +31,8 @@ random_step(X,Y,TurnsList):-
         append(TurnsList,[[X,Y]],NewTurnsList),
         length(TurnsList, Turn),
         format('Win in ~a turns\n', Turn),
-        % Update fact about solution found        
-        retractall(lastPath(_)),
-        assert(lastPath(NewTurnsList))
+
+        FinalPath = NewTurnsList
     );
     % Ordinary turn
 
@@ -47,29 +45,29 @@ random_step(X,Y,TurnsList):-
         (R==4, (NewY is Y  , NewX is X  , Pass is  0));
         (R==5, (NewY is Y  , NewX is X  , Pass is  1));
         (R==6, (NewY is Y  , NewX is X  , Pass is  2));
-        (R==7, (NewY is Y  , NewX is X  , Pass is  3))
+        (R==7, (NewY is Y  , NewX is X  , Pass is  3));
+        fail
     ),
     % If agent collides with the wall, retry the turn
-    (R < 4,
+    (
+        R < 4,
         (
-        append(TurnsList,[[X,Y]],NewTurnsList),
-        inBoundaries(NewX,NewY), 
-        random_step(NewX,NewY,NewTurnsList);
-        random_step(X,Y,TurnsList)
+            append(TurnsList,[[X,Y]],NewTurnsList),
+            inBoundaries(NewX,NewY), 
+            random_step(NewX,NewY,NewTurnsList,FinalPath);
+            random_step(X,Y,TurnsList,FinalPath)
         );
         (
             pass(NewX,NewY,Pass,PassedX,PassedY),
             (
                 append(TurnsList,[[X,Y,"Pass",Pass]],NewTurnsList),
-                write("\ngood pass\n"),
-                random_step(PassedX,PassedY,NewTurnsList)
+                random_step(PassedX,PassedY,NewTurnsList,FinalPath)
             );
             (
                 append(TurnsList,[[X,Y,"Pass",Pass]],NewTurnsList),
                 length(TurnsList, Turn),
                 format('Bad pass at turn ~a\n', Turn),
-                % Update fact about solution found
-                retractall(lastPath(_)),
-                assert(lastPath(NewTurnsList))
+                FinalPath = NewTurnsList
             )
-        )).  
+        )
+    ).  
