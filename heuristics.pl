@@ -17,7 +17,10 @@ inBoundaries(X,Y):-
  * 1 - right (positive x)
  * 2 - down (positive y)
  * 3 - left (negative x),
- * 
+ * 4 - pass up-right
+ * 5 - pass up-left
+ * 6 - pass down-right
+ * 7 - pass down-left
  * If pass can be done, HumanX and HumanY will be set 
  * to new coordinates of player
 **/
@@ -27,10 +30,14 @@ pass(X,Y,Direction,HumanX,HumanY):-
     inBoundaries(X,Y),
     (
         % Wrong pass direction - fail
-        (Direction==0, NewY is Y-1, NewX is X);
-        (Direction==1, NewY is Y, NewX is X+1);
-        (Direction==2, NewY is Y+1, NewX is X);
-        (Direction==3, NewY is Y, NewX is X-1);
+        (Direction==0, NewY is Y-1, NewX is X  );
+        (Direction==1, NewY is Y,   NewX is X+1);
+        (Direction==2, NewY is Y+1, NewX is X  );
+        (Direction==3, NewY is Y,   NewX is X-1);
+        (Direction==4, NewY is Y-1, NewX is X+1);
+        (Direction==5, NewY is Y-1, NewX is X-1);
+        (Direction==6, NewY is Y+1, NewX is X+1);
+        (Direction==7, NewY is Y+1, NewX is X-1);
         fail
     ),
     (
