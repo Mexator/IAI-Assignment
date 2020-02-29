@@ -25,9 +25,6 @@ inBoundaries(X,Y):-
  * to new coordinates of player
 **/
 pass(X,Y,Direction,HumanX,HumanY):-
-    % If an orc was met or we gone out of bounds - fail
-    not(o(X,Y)), 
-    inBoundaries(X,Y),
     (
         % Wrong pass direction - fail
         (Direction==0, NewY is Y-1, NewX is X  );
@@ -39,7 +36,10 @@ pass(X,Y,Direction,HumanX,HumanY):-
         (Direction==6, NewY is Y+1, NewX is X+1);
         (Direction==7, NewY is Y+1, NewX is X-1);
         fail
-    ),
+        ),
+    % If an orc was met or we gone out of bounds - fail
+    not(o(NewX,NewY)), 
+    inBoundaries(NewX,NewY),
     (
         (
             % If we met human along the line of pass, pass is successful 

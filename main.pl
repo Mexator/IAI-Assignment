@@ -1,39 +1,29 @@
 :-["draw_field.pl","random_search.pl"].
 
-% Random search-specific predicates
-:-dynamic([currentBestPath/1]).
-
-run:-
-    retractall(lastPath(_)),
-    retractall(currentBestPath(_)),
-    assert(currentBestPath([])),
-    assert(lastPath([])),
-    
+run:-  
     write('Initial field layout:\n'),
     drawField(),!,
-    start_search(),!,
-    max_attempts(Max),
-    currentBestPath(Best),
-    length(Best, Len),
-    (Len == 0 -> format('Path was not found with ~a attempts',Max);
-    format('Best path with len ~a was found in ~a attempts: \n ~w',[Len,Max,Best])).
+    start_search(),!.
 
 start_search():-
-    start_search(0).
+    start_search(0,[]).
 
-start_search(Attempt):-
-    max_attempts(Max), Attempt == Max.
+start_search(Attempt,BestPath):-
+    max_attempts(Max), Attempt == Max,
+    length(BestPath, Len),
+    (Len == 0 -> format('Path was not found with ~a attempts',Max);
+    format('Best path with len ~a was found in ~a attempts: \n ~w',[Len,Max,BestPath])).
 
-start_search(Attempt):-
+start_search(Attempt,BestPath):-
     max_attempts(Max), Attempt < Max,
     format('Attempt number ~a:\n',Attempt),
     
     random_search(Path),!,
     format('List of turns: ~w\n', [Path]),
-    updateBest(Path),!,
+    updateBest(Path,BestPath,NewBest),!,
 
     NewAttempt is Attempt + 1,
-    start_search(NewAttempt).
+    start_search(NewAttempt,NewBest).
 
 isWinning(Path):-
     last(Path,Element),
@@ -41,13 +31,11 @@ isWinning(Path):-
     nth0(1,Element,Y),
     t(X,Y).
 
-updateBest(CurPath):- 
-    currentBestPath(BestPath),
+updateBest(CurPath,CurBestPath,BestPath):- 
     length(CurPath, CurLenght),
-    length(BestPath, BestLength),
+    length(CurBestPath, BestLength),
     (isWinning(CurPath)->
-        ((BestPath == [] ; CurLenght < BestLength) ->
-            retractall(currentBestPath(_)),
-            assert(currentBestPath(CurPath));
-            true);
-    true).
+        ((CurBestPath == [] ; CurLenght < BestLength) ->
+            BestPath = CurPath;
+            BestPath = CurBestPath);
+    BestPath = CurBestPath).
