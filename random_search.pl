@@ -40,7 +40,7 @@ random_step(X,Y,TurnsList,FinalPath):-
     );
     % Ordinary turn
 
-    random_between(0, 7, R),
+    random_between(0, 11, R),
     (
         (R==0,  (NewY is Y-1, NewX is X  , Pass is -1));
         (R==1,  (NewY is Y  , NewX is X+1, Pass is -1));
