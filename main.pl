@@ -10,9 +10,9 @@ start_search():-
 
 start_search(Attempt,BestPath):-
     max_attempts(Max), Attempt == Max,
-    length(BestPath, Len),
+    path_length(BestPath, Len),
     (Len == 0 -> format('Path was not found with ~a attempts',Max);
-    format('Best path with len ~a was found in ~a attempts: \n ~w',[Len,Max,BestPath])).
+    format('Best path (~a turns) was found in ~a attempts: \n ~w',[Len,Max,BestPath])).
 
 start_search(Attempt,BestPath):-
     max_attempts(Max), Attempt < Max,
@@ -32,8 +32,8 @@ is_winning(Path):-
     t(X,Y).
 
 update_best(CurPath,CurBestPath,BestPath):- 
-    length(CurPath, CurLenght),
-    length(CurBestPath, BestLength),
+    path_length(CurPath, CurLenght),
+    path_length(CurBestPath, BestLength),
     (is_winning(CurPath)->
         ((CurBestPath == [] ; CurLenght < BestLength) ->
             BestPath = CurPath;

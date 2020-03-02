@@ -9,7 +9,7 @@ random_action(X,Y,PassPossible,TurnsList,FinalPath):-
         % Loose condition #1 (step at cell with orc)
         o(X,Y),
         append(TurnsList,[[X,Y]],NewTurnsList),
-        length(TurnsList, Turn),
+        path_length(TurnsList, Turn),
         format('Collision with orc at turn ~a\n', Turn),
     
         FinalPath = NewTurnsList
@@ -18,7 +18,7 @@ random_action(X,Y,PassPossible,TurnsList,FinalPath):-
         % Win condition
         t(X,Y),
         append(TurnsList,[[X,Y]],NewTurnsList),
-        length(TurnsList, Turn),
+        path_length(TurnsList, Turn),
         format('Win in ~a turns\n', Turn),
 
         FinalPath = NewTurnsList
@@ -50,12 +50,12 @@ random_pass(X,Y,TurnsList,FinalPath):-
     ),
     (pass(X,Y,Pass,PassedX,PassedY),
     (
-        append(TurnsList,[[X,Y,"Pass"+Pass]],NewTurnsList),
+        append(TurnsList,[[X,Y,"Pass",Pass]],NewTurnsList),
         random_action(PassedX,PassedY,false,NewTurnsList,FinalPath)
     );
     (
-        append(TurnsList,[[X,Y,"Pass"+Pass]],FinalPath),
-        length(TurnsList, Turn),
+        append(TurnsList,[[X,Y,"Pass",Pass]],FinalPath),
+        path_length(TurnsList, Turn),
         format('Bad pass at turn ~a\n', Turn)
     )).  
 

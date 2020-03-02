@@ -41,3 +41,12 @@ pass(X,Y,Direction,HumanX,HumanY):-
         );
         pass(NewX,NewY,Direction,HumanX,HumanY)
     ).
+
+path_length(Path,Length):-
+    length(Path, Len1),
+    Len2 is Len1-1,
+    List = [_,_,"Pass",_],
+    (member(List, Path)->Length is max(Len2-1,0);
+    Length is max(Len2,0)).
+     
+    
