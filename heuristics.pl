@@ -11,6 +11,18 @@ in_boundaries(X,Y):-
     X < SizeX, Y < SizeY,
     X >= 0, Y >= 0.
 
+win_condition(X,Y,TurnsList,FinalPath):-
+    t(X,Y),
+    append(TurnsList,[[X,Y]],FinalPath),
+    path_length(TurnsList, Turn),
+    format('Win in ~a turns\n', Turn).
+
+lose_condition(X,Y,TurnsList,FinalPath):-
+    % Loose condition #1 (step at cell with orc)
+    o(X,Y),
+    append(TurnsList,[[X,Y]],FinalPath),
+    path_length(TurnsList, Turn),
+    format('Collision with orc at turn ~a\n', Turn).
 /**
  * If pass can be done, HumanX and HumanY will be set 
  * to new coordinates of player
@@ -48,5 +60,3 @@ path_length(Path,Length):-
     List = [_,_,"Pass",_],
     (member(List, Path)->Length is max(Len2-1,0);
     Length is max(Len2,0)).
-     
-    

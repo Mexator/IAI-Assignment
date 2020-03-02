@@ -5,24 +5,8 @@ random_search(Path):-
     random_action(X,Y,true,[],Path).
 
 random_action(X,Y,PassPossible,TurnsList,FinalPath):-
-    (
-        % Loose condition #1 (step at cell with orc)
-        o(X,Y),
-        append(TurnsList,[[X,Y]],NewTurnsList),
-        path_length(TurnsList, Turn),
-        format('Collision with orc at turn ~a\n', Turn),
-    
-        FinalPath = NewTurnsList
-    );
-    (
-        % Win condition
-        t(X,Y),
-        append(TurnsList,[[X,Y]],NewTurnsList),
-        path_length(TurnsList, Turn),
-        format('Win in ~a turns\n', Turn),
-
-        FinalPath = NewTurnsList
-    );    
+    win_condition(X,Y,TurnsList,FinalPath);       
+    lose_condition(X,Y,TurnsList,FinalPath);       
     /*
     * Here R is binded to action that agent will perform:
     * 0  - pass in random direction
