@@ -2,7 +2,7 @@
 
 run:-  
     write('Initial field layout:\n'),
-    drawField(),!,
+    drawField(),
     start_search(),!.
 
 start_search():-

@@ -27,14 +27,14 @@ inBoundaries(X,Y):-
 pass(X,Y,Direction,HumanX,HumanY):-
     (
         % Wrong pass direction - fail
-        (Direction==0, NewY is Y-1, NewX is X  );
-        (Direction==1, NewY is Y,   NewX is X+1);
-        (Direction==2, NewY is Y+1, NewX is X  );
-        (Direction==3, NewY is Y,   NewX is X-1);
-        (Direction==4, NewY is Y-1, NewX is X+1);
-        (Direction==5, NewY is Y-1, NewX is X-1);
-        (Direction==6, NewY is Y+1, NewX is X+1);
-        (Direction==7, NewY is Y+1, NewX is X-1);
+        (Direction=up,         NewY is Y-1, NewX is X  );
+        (Direction=right,      NewY is Y,   NewX is X+1);
+        (Direction=down,       NewY is Y+1, NewX is X  );
+        (Direction=left,       NewY is Y,   NewX is X-1);
+        (Direction=up_right,   NewY is Y-1, NewX is X+1);
+        (Direction=up_left,    NewY is Y-1, NewX is X-1);
+        (Direction=down_right, NewY is Y+1, NewX is X+1);
+        (Direction=down_left,  NewY is Y+1, NewX is X-1);
         fail
         ),
     % If an orc was met or we gone out of bounds - fail

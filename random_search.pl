@@ -42,18 +42,18 @@ random_step(X,Y,TurnsList,FinalPath):-
 
     random_between(0, 11, R),
     (
-        (R==0,  (NewY is Y-1, NewX is X  , Pass is -1));
-        (R==1,  (NewY is Y  , NewX is X+1, Pass is -1));
-        (R==2,  (NewY is Y+1, NewX is X  , Pass is -1));
-        (R==3,  (NewY is Y  , NewX is X-1, Pass is -1));
-        (R==4,  (NewY is Y  , NewX is X  , Pass is  0));
-        (R==5,  (NewY is Y  , NewX is X  , Pass is  1));
-        (R==6,  (NewY is Y  , NewX is X  , Pass is  2));
-        (R==7,  (NewY is Y  , NewX is X  , Pass is  3));
-        (R==8,  (NewY is Y  , NewX is X  , Pass is  4));
-        (R==9,  (NewY is Y  , NewX is X  , Pass is  5));
-        (R==10, (NewY is Y  , NewX is X  , Pass is  6));
-        (R==11, (NewY is Y  , NewX is X  , Pass is  7));
+        (R==0,  (NewY is Y-1, NewX is X  , Pass = -1));
+        (R==1,  (NewY is Y  , NewX is X+1, Pass = -1));
+        (R==2,  (NewY is Y+1, NewX is X  , Pass = -1));
+        (R==3,  (NewY is Y  , NewX is X-1, Pass = -1));
+        (R==4,  (NewY is Y  , NewX is X  , Pass =  up));
+        (R==5,  (NewY is Y  , NewX is X  , Pass =  right));
+        (R==6,  (NewY is Y  , NewX is X  , Pass =  down));
+        (R==7,  (NewY is Y  , NewX is X  , Pass =  left));
+        (R==8,  (NewY is Y  , NewX is X  , Pass =  up_right));
+        (R==9,  (NewY is Y  , NewX is X  , Pass =  up_left));
+        (R==10, (NewY is Y  , NewX is X  , Pass =  down_right));
+        (R==11, (NewY is Y  , NewX is X  , Pass =  down_left));
         fail
     ),
     % If agent collides with the wall, retry the turn
