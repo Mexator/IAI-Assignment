@@ -76,6 +76,6 @@ random_pass(X,Y,TurnsList,FinalPath):-
         ),
         append(TurnsList,[[X,Y]],NewTurnsList),
         % If agent collides with the wall, retry the turn
-        (inBoundaries(NewX,NewY) -> 
+        (in_boundaries(NewX,NewY) -> 
         random_action(NewX,NewY,PassPossible,NewTurnsList,FinalPath);
         random_step(X,Y,PassPossible,TurnsList,FinalPath)).

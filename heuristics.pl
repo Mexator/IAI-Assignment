@@ -1,26 +1,17 @@
 :-["input.pl"].
 % This file contains all general-purpose predicates that can be used 
 % in different search algorithms
-cellFree(X,Y):-
+cell_free(X,Y):-
     not(h(X,Y)),
     not(o(X,Y)),
     not(t(X,Y)).
 
-inBoundaries(X,Y):-
+in_boundaries(X,Y):-
     size(SizeX, SizeY),
     X < SizeX, Y < SizeY,
     X >= 0, Y >= 0.
 
 /**
- * Here direction is number among 1, 2, 3, 4
- * 0 - up (negative y)
- * 1 - right (positive x)
- * 2 - down (positive y)
- * 3 - left (negative x),
- * 4 - pass up-right
- * 5 - pass up-left
- * 6 - pass down-right
- * 7 - pass down-left
  * If pass can be done, HumanX and HumanY will be set 
  * to new coordinates of player
 **/
@@ -39,7 +30,7 @@ pass(X,Y,Direction,HumanX,HumanY):-
         ),
     % If an orc was met or we gone out of bounds - fail
     not(o(NewX,NewY)), 
-    inBoundaries(NewX,NewY),
+    in_boundaries(NewX,NewY),
     (
         (
             % If we met human along the line of pass, pass is successful 

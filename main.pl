@@ -2,7 +2,7 @@
 
 run:-  
     write('Initial field layout:\n'),
-    drawField(),!,
+    draw_field(),!,
     start_search(),!.
 
 start_search():-
@@ -20,21 +20,21 @@ start_search(Attempt,BestPath):-
     
     random_search(Path),!,
     format('List of turns: ~w\n', [Path]),
-    updateBest(Path,BestPath,NewBest),!,
+    update_best(Path,BestPath,NewBest),!,
 
     NewAttempt is Attempt + 1,
     start_search(NewAttempt,NewBest).
 
-isWinning(Path):-
+is_winning(Path):-
     last(Path,Element),
     nth0(0,Element,X),
     nth0(1,Element,Y),
     t(X,Y).
 
-updateBest(CurPath,CurBestPath,BestPath):- 
+update_best(CurPath,CurBestPath,BestPath):- 
     length(CurPath, CurLenght),
     length(CurBestPath, BestLength),
-    (isWinning(CurPath)->
+    (is_winning(CurPath)->
         ((CurBestPath == [] ; CurLenght < BestLength) ->
             BestPath = CurPath;
             BestPath = CurBestPath);
