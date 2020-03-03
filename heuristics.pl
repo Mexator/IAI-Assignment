@@ -1,6 +1,6 @@
-:-["input.pl"].
-% This file contains all general-purpose predicates that can be used 
-% in different search algorithms
+:-["input.pl",library(clpfd)].
+/* This file contains all general-purpose predicates that can be used 
+ within different search algorithms*/
 cell_free(X,Y):-
     not(h(X,Y)),
     not(o(X,Y)),
@@ -10,6 +10,40 @@ in_boundaries(X,Y):-
     size(SizeX, SizeY),
     X < SizeX, Y < SizeY,
     X >= 0, Y >= 0.
+
+cells_number(Number):-
+    size(SizeX,SizeY),
+    Number is SizeX*SizeY.
+
+neighbour(CurrentX,CurrentY,CurrentX,NeighbourY):-
+    in_boundaries(CurrentX,CurrentY),
+    (NeighbourY - CurrentY #= 1;
+    NeighbourY - CurrentY #= -1),
+    in_boundaries(CurrentX,NeighbourY).
+
+neighbour(CurrentX,CurrentY,NeighbourX,CurrentY):-
+    in_boundaries(CurrentX,CurrentY),
+    (NeighbourX - CurrentX #= 1;
+    NeighbourX - CurrentX #= -1),
+    in_boundaries(NeighbourX,CurrentY).
+
+neighbour_with_diagonals(CurrentX,CurrentY,NeighbourX,NeighbourY):-
+    neighbour(CurrentX,CurrentY,NeighbourX,NeighbourY).
+neighbour_with_diagonals(CurrentX,CurrentY,NeighbourX,NeighbourY):-
+    in_boundaries(CurrentX,CurrentY),
+    (NeighbourX - CurrentX #= 1;
+    NeighbourX - CurrentX #= -1),
+    (NeighbourY - CurrentY #= 1;
+    NeighbourY - CurrentY #= -1),
+    in_boundaries(NeighbourY,NeighbourX).
+
+visited(X,Y,VisitList):-
+    member([X,Y], VisitList).
+
+partially_visited(X,Y,VisitList):-
+    visited(X,Y,VisitList),
+    neighbour(X,Y,NeighbourX,NeighbourY),
+    not(visited(NeighbourX,NeighbourY,VisitList)),!.
 
 win_condition(X,Y,TurnsList,FinalPath):-
     t(X,Y),

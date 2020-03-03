@@ -9,7 +9,7 @@ draw_free_cell:-
     write('. ').
 
 draw_field():-
-    draw_field(0,0).
+    draw_field(0,0),!.
 draw_field(X_cur, Y_cur):-
     in_boundaries(X_cur,Y_cur),
     (o(X_cur,Y_cur)->draw_orc;

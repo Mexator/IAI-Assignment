@@ -2,7 +2,7 @@
 
 run:-  
     write('Initial field layout:\n'),
-    draw_field(),!,
+    draw_field(),
     get_time(TimeStart),    
     start_search(),!,
     get_time(TimeEnd),
@@ -18,7 +18,8 @@ start_search(Attempt,BestPath):-
     length(BestPath, NaiveLen),
     Moves is NaiveLen-1,
     (Turns == 0 -> format('Path was not found with ~a attempts',Max);
-    format('Best path (~a turns, ~a moves) was found in ~a attempts: \n ~w\n',[Turns,Moves,Max,BestPath])).
+    format('Best path (~a turns, ~a moves) was found in ~a attempts: \n ~w\n',
+        [Turns,Moves,Max,BestPath])).
 
 start_search(Attempt,BestPath):-
     max_attempts(Max), Attempt < Max,
@@ -45,3 +46,6 @@ update_best(CurPath,CurBestPath,BestPath):-
             BestPath = CurPath;
             BestPath = CurBestPath);
     BestPath = CurBestPath).
+
+% ...Because exit is more convenient
+exit:-halt.
