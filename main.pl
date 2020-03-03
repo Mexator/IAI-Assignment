@@ -1,9 +1,13 @@
-:-["draw_field.pl","random_search.pl"].
+:-["draw_field.pl","random_search.pl","backtracking_search.pl"].
 
 run:-  
     write('Initial field layout:\n'),
     draw_field(),!,
-    start_search(),!.
+    get_time(TimeStart),    
+    start_search(),!,
+    get_time(TimeEnd),
+    ElapsedTime is TimeEnd - TimeStart,
+    format('Elapsed time: ~4f s\n',[ElapsedTime]).
 
 start_search():-
     start_search(0,[]).
@@ -12,7 +16,7 @@ start_search(Attempt,BestPath):-
     max_attempts(Max), Attempt == Max,
     path_length(BestPath, Len),
     (Len == 0 -> format('Path was not found with ~a attempts',Max);
-    format('Best path (~a turns) was found in ~a attempts: \n ~w',[Len,Max,BestPath])).
+    format('Best path (~a turns) was found in ~a attempts: \n ~w\n',[Len,Max,BestPath])).
 
 start_search(Attempt,BestPath):-
     max_attempts(Max), Attempt < Max,
