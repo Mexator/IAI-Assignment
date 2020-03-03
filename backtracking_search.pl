@@ -9,8 +9,12 @@ start_search_backtrack(X,Y,FinalPath):-
     Dy is NY - Y,
     search_backtrack(X,Y,Dx,Dy,[],[],FinalPath).
 
+search_backtrack(X,Y,Dx,Dy,_,Turns,FinalPath):-
+    NewX is X + Dx,
+    NewY is Y + Dy,
+    win_condition(NewX,NewY,Turns,FinalPath),!.
+
 search_backtrack(X,Y,Dx,Dy,Visited,Turns,FinalPath):-
-    win_condition(X,Y,Turns,FinalPath);
     % Fail, if we have too much turns
     length(Turns, Turn),
     cells_number(MaxTurns),
