@@ -48,14 +48,14 @@ partially_visited(X,Y,VisitList):-
 win_condition(X,Y,TurnsList,FinalPath):-
     t(X,Y),
     append(TurnsList,[[X,Y]],FinalPath),
-    path_length(TurnsList, Turn),
-    format('Win in ~a turns\n', Turn).
+    path_length(FinalPath, Turn),
+    format('Win in ~a turns\n ~w', [Turn,FinalPath]).
 
 lose_condition(X,Y,TurnsList,FinalPath):-
     % Loose condition #1 (step at cell with orc)
     o(X,Y),
     append(TurnsList,[[X,Y]],FinalPath),
-    path_length(TurnsList, Turn),
+    path_length(FinalPath, Turn),
     format('Collision with orc at turn ~a\n', Turn).
 /**
  * If pass can be done, HumanX and HumanY will be set 
