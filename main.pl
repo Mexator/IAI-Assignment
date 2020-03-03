@@ -14,9 +14,11 @@ start_search():-
 
 start_search(Attempt,BestPath):-
     max_attempts(Max), Attempt == Max,
-    path_length(BestPath, Len),
-    (Len == 0 -> format('Path was not found with ~a attempts',Max);
-    format('Best path (~a turns) was found in ~a attempts: \n ~w\n',[Len,Max,BestPath])).
+    path_length(BestPath, Turns),
+    length(BestPath, NaiveLen),
+    Moves is NaiveLen-1,
+    (Turns == 0 -> format('Path was not found with ~a attempts',Max);
+    format('Best path (~a turns, ~a moves) was found in ~a attempts: \n ~w\n',[Turns,Moves,Max,BestPath])).
 
 start_search(Attempt,BestPath):-
     max_attempts(Max), Attempt < Max,

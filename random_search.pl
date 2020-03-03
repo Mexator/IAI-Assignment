@@ -34,11 +34,11 @@ random_pass(X,Y,TurnsList,FinalPath):-
     ),
     (pass(X,Y,Pass,PassedX,PassedY),
     (
-        append(TurnsList,[[X,Y,"Pass",Pass]],NewTurnsList),
+        append(TurnsList,[[X,Y,'Free','Pass'+Pass]],NewTurnsList),
         random_action(PassedX,PassedY,false,NewTurnsList,FinalPath)
     );
     (
-        append(TurnsList,[[X,Y,"Pass",Pass]],FinalPath),
+        append(TurnsList,[[X,Y,'Free','Pass'+Pass]],FinalPath),
         path_length(TurnsList, Turn),
         format('Bad pass at turn ~a\n', Turn)
     )).  
@@ -58,7 +58,8 @@ random_pass(X,Y,TurnsList,FinalPath):-
             R==2 -> (NewY is Y+1, NewX is X);
             R==3 -> (NewY is Y, NewX is X-1)
         ),
-        append(TurnsList,[[X,Y]],NewTurnsList),
+        (h(X,Y) -> append(TurnsList,[[X,Y,'Free','running play']],NewTurnsList);
+        append(TurnsList,[[X,Y]],NewTurnsList)),
         % If agent collides with the wall, retry the turn
         (in_boundaries(NewX,NewY) -> 
         random_action(NewX,NewY,PassPossible,NewTurnsList,FinalPath);
