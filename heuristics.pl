@@ -49,7 +49,7 @@ win_condition(X,Y,TurnsList,FinalPath):-
     t(X,Y),
     append(TurnsList,[[X,Y]],FinalPath),
     path_length(FinalPath, Turn),
-    format('Win in ~a turns\n ~w', [Turn,FinalPath]).
+    format('Win in ~a turns\n ~w\n', [Turn,FinalPath]).
 
 lose_condition(X,Y,TurnsList,FinalPath):-
     % Loose condition #1 (step at cell with orc)

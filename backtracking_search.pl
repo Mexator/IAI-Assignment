@@ -7,28 +7,37 @@ start_search_backtrack(X,Y,FinalPath):-
     neighbour(X,Y,NX,NY),
     Dx is NX - X,
     Dy is NY - Y,
-    search_backtrack(X,Y,Dx,Dy,[],[],FinalPath).
+    search_backtrack(X,Y,Dx,Dy,[],[],true,FinalPath).
 
-search_backtrack(X,Y,Dx,Dy,_,Turns,FinalPath):-
+search_backtrack(X,Y,Dx,Dy,_,Turns,_,FinalPath):-
     NewX is X + Dx,
     NewY is Y + Dy,
-    win_condition(NewX,NewY,Turns,FinalPath),!.
+    append(Turns,[[X,Y]],NewTurns),
+    win_condition(NewX,NewY,NewTurns,FinalPath),!.
 
-search_backtrack(X,Y,Dx,Dy,Visited,Turns,FinalPath):-
-    % Fail, if we have too much turns
-    length(Turns, Turn),
-    cells_number(MaxTurns),
-    Turn < MaxTurns,
+search_backtrack(X,Y,_,_,Visited,Turns,true,FinalPath):-
+    pass(X,Y,Pass,PassedX,PassedY),
+    append(Turns,[[X,Y,'Free','Pass'+Pass]],NewTurnsList),
+    search_backtrack(PassedX,PassedY,0,0,Visited,NewTurnsList,false,FinalPath).
+
+search_backtrack(X,Y,Dx,Dy,Visited,Turns,PassPossible,FinalPath):-
     NewX is X + Dx,
     NewY is Y + Dy,
     not(visited(NewX,NewY,Visited)),
     not(o(NewX,NewY)),
-    neighbour(NewX,NewY,NX,NY),
-    NewDx is NX - NewX,
-    NewDy is NY - NewY,
+    
+    (
+    (NewDx is  1, NewDy is  0);
+    (NewDx is  0, NewDy is  1);
+    (NewDx is  0, NewDy is -1);
+    (NewDx is -1, NewDy is  0)
+    ),
+
+    in_boundaries(NewX+NewDx,NewY+NewDy),
     union(Visited,[[X,Y]],NewVisited),
-    append(Turns,[[X,Y]],NewTurns),
-    search_backtrack(NewX,NewY,NewDx,NewDy,NewVisited,NewTurns,FinalPath).
+    (h(X,Y)->append(Turns,[[X,Y,'Free','running play']],NewTurns);
+    append(Turns,[[X,Y]],NewTurns)),
+    search_backtrack(NewX,NewY,NewDx,NewDy,NewVisited,NewTurns,PassPossible,FinalPath).
     
 /*
 action(X,Y,_,Turns,_,FinalPath):-

@@ -8,6 +8,14 @@ run:-
     get_time(TimeEnd),
     ElapsedTime is TimeEnd - TimeStart,
     format('Elapsed time: ~4f s\n',[ElapsedTime]).
+run_backtrack:-
+    write('Initial field layout:\n'),
+    draw_field(),
+    get_time(TimeStart),
+    backtracking_search(_),!,
+    get_time(TimeEnd),
+    ElapsedTime is TimeEnd - TimeStart,
+    format('Elapsed time: ~4f s\n',[ElapsedTime]).
 
 start_search():-
     start_search(0,[]).
