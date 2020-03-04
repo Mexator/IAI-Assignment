@@ -5,30 +5,29 @@ backtracking_search(Path):-
 
 start_search_backtrack(X,Y,FinalPath):-
     neighbour(X,Y,NX,NY),
-    Dx is NX - X,
-    Dy is NY - Y,
-    search_backtrack(X,Y,Dx,Dy,[],[],FinalPath).
+    search_backtrack(NX,NY,[X,Y],[X,Y],FinalPath).
 
-search_backtrack(X,Y,Dx,Dy,_,Turns,FinalPath):-
-    NewX is X + Dx,
-    NewY is Y + Dy,
+search_backtrack(NewX,NewY,_,Turns,FinalPath):-
     win_condition(NewX,NewY,Turns,FinalPath),!.
 
-search_backtrack(X,Y,Dx,Dy,Visited,Turns,FinalPath):-
+search_backtrack(NewX,NewY,Visited,Turns,FinalPath):-
+    o(NewX,NewY),!,
+    union(Visited,[NewX,NewY],NewVisited),
+    neighbour(NewX,NewY,NX,NY),
+    not(visited(NX,NY,Visited)),
+    search_backtrack(NX,NY,NewVisited,Turns,FinalPath).
+
+search_backtrack(NewX,NewY,Visited,Turns,FinalPath):-
     % Fail, if we have too much turns
     length(Turns, Turn),
     cells_number(MaxTurns),
     Turn < MaxTurns,
-    NewX is X + Dx,
-    NewY is Y + Dy,
     not(visited(NewX,NewY,Visited)),
     not(o(NewX,NewY)),
     neighbour(NewX,NewY,NX,NY),
-    NewDx is NX - NewX,
-    NewDy is NY - NewY,
-    union(Visited,[[X,Y]],NewVisited),
-    append(Turns,[[X,Y]],NewTurns),
-    search_backtrack(NewX,NewY,NewDx,NewDy,NewVisited,NewTurns,FinalPath).
+    union(Visited,[[NewX,NewY]],NewVisited),
+    append(Turns,[[NewX,NewY]],NewTurns),
+    search_backtrack(NX,NY,NewVisited,NewTurns,FinalPath).
     
 /*
 action(X,Y,_,Turns,_,FinalPath):-
