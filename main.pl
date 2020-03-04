@@ -1,18 +1,13 @@
 :-["draw_field.pl","random_search.pl","backtracking_search.pl"].
 
 run:-  
-    write('Initial field layout:\n'),
-    draw_field(),
-    get_time(TimeStart),    
-    start_search(),!,
-    get_time(TimeEnd),
-    ElapsedTime is TimeEnd - TimeStart,
-    format('Elapsed time: ~4f s\n',[ElapsedTime]).
-run_backtrack:-
+    run(start_search),
+    run(backtracking_search).
+run(SearchPredicate):-
     write('Initial field layout:\n'),
     draw_field(),
     get_time(TimeStart),
-    backtracking_search(_),!,
+    call(SearchPredicate),!,
     get_time(TimeEnd),
     ElapsedTime is TimeEnd - TimeStart,
     format('Elapsed time: ~4f s\n',[ElapsedTime]).

@@ -1,4 +1,6 @@
 :-["input.pl","heuristics.pl"].
+backtracking_search:-
+    backtracking_search(_).
 backtracking_search(Path):-
     start_pos(X,Y),
     start_search_backtrack(X,Y,Path).
