@@ -70,7 +70,7 @@ direction(Dir,Dx,Dy):-
         (Dir=down_right, Dy is +1, Dx is +1);
         (Dir=down_left,  Dy is +1, Dx is -1);
         fail
-    ),!.
+    ).
 /**
  * If pass can be done, HumanX and HumanY will be set 
  * to new coordinates of player

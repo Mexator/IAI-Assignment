@@ -1,4 +1,5 @@
-:-["draw_field.pl","random_search.pl","backtracking_search.pl"].
+:-["draw_field.pl","random_search.pl",
+"backtracking_search.pl","a_star_search.pl"].
 
 run:-  
     make,
