@@ -1,2 +1,4 @@
 *
 !*.pl
+input.pl
+gen.py

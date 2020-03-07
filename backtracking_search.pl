@@ -1,4 +1,8 @@
 :-["input.pl","heuristics.pl"].
+
+:-dynamic(min_len/1).
+len_min(X):-min_len(X),!.
+
 backtracking_search_best:-
     findall(X,backtracking_search(X),L),
     last(L, Elem),
@@ -7,9 +11,6 @@ backtracking_search_best:-
 backtracking_search_first:-
     backtracking_search(Path),
     format('First path found with backtracking: ~w\n',[Path]).
-
-:-dynamic(min_len/1).
-len_min(X):-min_len(X),!.
 
 backtracking_search(Path):-
     start_pos(X,Y),!,
@@ -36,9 +37,9 @@ start_search_backtrack(X,Y,Visited,TurnsList,PassPossible,FinalPath):-
     
     path_length(TurnsList, Len),
     len_min(Min),
-    Len =< Min,
+    Len < Min,
 
-    union(Visited,[[NX,NY]],NewVisited),
+    union(Visited,[[X,Y]],NewVisited),
     search_backtrack(X,Y,Dx,Dy,NewVisited,TurnsList,PassPossible,FinalPath).
 start_search_backtrack(X,Y,Visited,TurnsList,true,FinalPath):-
     (
@@ -51,9 +52,10 @@ start_search_backtrack(X,Y,Visited,TurnsList,true,FinalPath):-
     pass(X,Y,Dx,Dy,PassedX,PassedY),
     direction(Pass,Dx,Dy),
     append(TurnsList,[[X,Y,'Free','Pass'+Pass]],NewTurnsList),
-    start_search_backtrack(PassedX,PassedY,Visited,NewTurnsList,false,FinalPath).
+    union(Visited,[[X,Y]],NewVisited),
+    start_search_backtrack(PassedX,PassedY,NewVisited,NewTurnsList,false,FinalPath).
 
-% Checking touchdown in adjacent cells
+% Checking touchdown
 search_backtrack(X,Y,Dx,Dy,_,Turns,_,FinalPath):-
     NewX is X + Dx,
     NewY is Y + Dy,
@@ -63,7 +65,7 @@ search_backtrack(X,Y,Dx,Dy,_,Turns,_,FinalPath):-
     
     path_length(NewTurns, Len),
     len_min(Min),
-    Len =< Min,
+    Len < Min,
     retractall(min_len(_)),
     assert(min_len(Len)),
     

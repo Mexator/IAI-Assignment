@@ -1,5 +1,44 @@
 :-["heuristics.pl"].
 
+random_search:-
+    random_search(0,[]).
+
+random_search(Attempt,BestPath):-
+    max_attempts(Max), Attempt < Max,
+    
+    format('Attempt number ~a:\n',Attempt),
+    random_search(Path),!,
+    format('List of turns: ~w\n', [Path]),
+    
+    (
+        (
+            is_winning(Path),
+            path_length(Path, CurLenght),
+            path_length(BestPath, BestLength),
+            (BestPath == [] ; CurLenght < BestLength),
+            NewBestPath = Path
+        );
+        NewBestPath = BestPath
+    ),
+
+    NewAttempt is Attempt + 1,
+    random_search(NewAttempt,NewBestPath).
+
+random_search(Attempt,BestPath):-
+    max_attempts(Max), Attempt == Max,
+    path_length(BestPath, Turns),
+    length(BestPath, NaiveLen),
+    Moves is NaiveLen-1,
+    (Turns == 0 -> format('Path was not found with ~a attempts\n',Max);
+    format('Best path (~a turns, ~a moves) was found in ~a attempts:\n ~w\n',
+        [Turns,Moves,Max,BestPath])),!.
+
+is_winning(Path):-
+    last(Path,Element),
+    nth0(0,Element,X),
+    nth0(1,Element,Y),
+    t(X,Y).
+
 random_search(Path):-
     start_pos(X,Y),
     random_action(X,Y,true,[],Path).
