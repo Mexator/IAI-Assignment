@@ -19,14 +19,10 @@ backtracking_search(Path):-
 
 start_search_backtrack(X,Y,Visited,TurnsList,PassPossible,FinalPath):-
     (
-        (Dx is  0, Dy is  1);
-        (Dx is  1, Dy is  0);
-        (Dx is  0, Dy is -1);
-        (Dx is -1, Dy is  0)%;
-        % direction(up_right,Dx,Dy);
-        % direction(up_left,Dx,Dy);
-        % direction(down_left,Dx,Dy);
-        % direction(down_right,Dx,Dy)
+        direction(down,         Dx,Dy);
+        direction(right,        Dx,Dy);
+        direction(up,           Dx,Dy);
+        direction(left,         Dx,Dy)
     ),
     NX is X + Dx,
     NY is Y + Dy,
@@ -39,9 +35,19 @@ start_search_backtrack(X,Y,Visited,TurnsList,PassPossible,FinalPath):-
     Len =< Min,
 
     union(Visited,[[NX,NY]],NewVisited),
-
-    % format('Searching from (~a,~a)~n',[X,Y]),
     search_backtrack(X,Y,Dx,Dy,NewVisited,TurnsList,PassPossible,FinalPath).
+start_search_backtrack(X,Y,Visited,TurnsList,true,FinalPath):-
+    (
+        direction(up_right,     Dx,Dy);
+        direction(up_left,      Dx,Dy);
+        direction(down_left,    Dx,Dy);
+        direction(down_right,   Dx,Dy)
+    ),
+
+    pass(X,Y,Dx,Dy,PassedX,PassedY),
+    direction(Pass,Dx,Dy),
+    append(TurnsList,[[X,Y,'Free','Pass'+Pass]],NewTurnsList),
+    start_search_backtrack(PassedX,PassedY,Visited,NewTurnsList,false,FinalPath).
 
 % Checking touchdown in adjacent cells
 search_backtrack(X,Y,Dx,Dy,_,Turns,_,FinalPath):-
@@ -67,9 +73,3 @@ search_backtrack(X,Y,Dx,Dy,Visited,Turns,PassPossible,FinalPath):-
     append(Turns,[[X,Y]],NewTurns)),
     
     start_search_backtrack(NewX,NewY,Visited,NewTurns,PassPossible,FinalPath).
-% Trying pass
-search_backtrack(X,Y,Dx,Dy,Visited,Turns,true,FinalPath):-
-    pass(X,Y,Dx,Dy,PassedX,PassedY),
-    direction(Pass,Dx,Dy),
-    append(Turns,[[X,Y,'Free','Pass'+Pass]],NewTurnsList),
-    start_search_backtrack(PassedX,PassedY,Visited,NewTurnsList,false,FinalPath).

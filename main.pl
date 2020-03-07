@@ -1,6 +1,7 @@
 :-["draw_field.pl","random_search.pl","backtracking_search.pl"].
 
 run:-  
+    make,
     run(start_search),
     run(backtracking_search).
 run(SearchPredicate):-
