@@ -1,8 +1,12 @@
 :-["input.pl","heuristics.pl"].
-backtracking_search:-
+backtracking_search_best:-
     findall(X,backtracking_search(X),L),
     last(L, Elem),
-    format('best path: ~w\n',[Elem]).
+    format('Best path found with backtracking: ~w\n',[Elem]).
+
+backtracking_search_first:-
+    backtracking_search(Path),
+    format('First path found with backtracking: ~w\n',[Path]).
 
 :-dynamic(min_len/1).
 len_min(X):-min_len(X),!.
@@ -59,7 +63,7 @@ search_backtrack(X,Y,Dx,Dy,_,Turns,_,FinalPath):-
     
     path_length(NewTurns, Len),
     len_min(Min),
-    Len < Min,
+    Len =< Min,
     retractall(min_len(_)),
     assert(min_len(Len)),
     
