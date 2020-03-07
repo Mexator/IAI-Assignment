@@ -75,25 +75,7 @@ direction(Dir,Dx,Dy):-
  * If pass can be done, HumanX and HumanY will be set 
  * to new coordinates of player
 **/
-pass(X,Y,Direction,HumanX,HumanY):-
-    direction(Direction,Dx,Dy),
-    NewX is X + Dx,
-    NewY is Y + Dy,
-    % If an orc was met or we gone out of bounds - fail
-    not(o(NewX,NewY)), 
-    in_boundaries(NewX,NewY),
-    (
-        (
-            % If we met human along the line of pass, pass is successful 
-            % and coordinates of human are bounded to HumanX and HumanY
-            h(NewX,NewY),
-            HumanX is NewX,
-            HumanY is NewY
-        );
-        pass(NewX,NewY,Direction,HumanX,HumanY)
-    ),!.
 pass(X,Y,Dx,Dy,HumanX,HumanY):-
-    direction(Direction,Dx,Dy),
     NewX is X + Dx,
     NewY is Y + Dy,
     % If an orc was met or we gone out of bounds - fail
@@ -107,7 +89,7 @@ pass(X,Y,Dx,Dy,HumanX,HumanY):-
             HumanX is NewX,
             HumanY is NewY
         );
-        pass(NewX,NewY,Direction,HumanX,HumanY)
+        pass(NewX,NewY,Dx,Dy,HumanX,HumanY)
     ).
 
 path_length([],0):-!.

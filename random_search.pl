@@ -32,7 +32,8 @@ random_pass(X,Y,TurnsList,FinalPath):-
         (R==8,  Pass =  down_left);
         fail
     ),
-    (pass(X,Y,Pass,PassedX,PassedY),
+    direction(Pass,Dx,Dy),
+    (pass(X,Y,Dx,Dy,PassedX,PassedY),
     (
         append(TurnsList,[[X,Y,'Free','Pass'+Pass]],NewTurnsList),
         random_action(PassedX,PassedY,false,NewTurnsList,FinalPath)

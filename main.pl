@@ -3,7 +3,7 @@
 run:-  
     make,
     run(start_search),
-    run(backtracking_search).
+    run(backtracking_search_best).
 run(SearchPredicate):-
     write('Initial field layout:\n'),
     draw_field(),
