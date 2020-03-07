@@ -1,57 +1,75 @@
 :-["input.pl","heuristics.pl"].
 backtracking_search:-
-    backtracking_search(_).
+    findall(X,backtracking_search(X),L),
+    last(L, Elem),
+    format('best path: ~w\n',[Elem]).
+
+:-dynamic(min_len/1).
+len_min(X):-min_len(X),!.
+
 backtracking_search(Path):-
-    start_pos(X,Y),
-    start_search_backtrack(X,Y,Path).
+    start_pos(X,Y),!,
+    
+    retractall(min_len(_)),
+    size(SizeX,SizeY),
+    S is  SizeX * SizeY,
+    assert(min_len(S)),
+    
+    start_search_backtrack(X,Y,[[X,Y]],[[X,Y]],true,Path).
 
-start_search_backtrack(X,Y,FinalPath):-
-    neighbour(X,Y,NX,NY),
-    Dx is NX - X,
-    Dy is NY - Y,
-    search_backtrack(X,Y,Dx,Dy,[],[],true,FinalPath).
+start_search_backtrack(X,Y,Visited,TurnsList,PassPossible,FinalPath):-
+    (
+        (Dx is  0, Dy is  1);
+        (Dx is  1, Dy is  0);
+        (Dx is  0, Dy is -1);
+        (Dx is -1, Dy is  0)%;
+        % direction(up_right,Dx,Dy);
+        % direction(up_left,Dx,Dy);
+        % direction(down_left,Dx,Dy);
+        % direction(down_right,Dx,Dy)
+    ),
+    NX is X + Dx,
+    NY is Y + Dy,
+    in_boundaries(NX,NY),
+    not(o(NX,NY)),
+    not(visited(NX,NY,Visited)),
+    
+    path_length(TurnsList, Len),
+    len_min(Min),
+    Len =< Min,
 
+    union(Visited,[[NX,NY]],NewVisited),
+
+    % format('Searching from (~a,~a)~n',[X,Y]),
+    search_backtrack(X,Y,Dx,Dy,NewVisited,TurnsList,PassPossible,FinalPath).
+
+% Checking touchdown in adjacent cells
 search_backtrack(X,Y,Dx,Dy,_,Turns,_,FinalPath):-
     NewX is X + Dx,
     NewY is Y + Dy,
-    append(Turns,[[X,Y]],NewTurns),
-    win_condition(NewX,NewY,NewTurns,FinalPath),!.
+    t(NewX,NewY),!,
 
-search_backtrack(X,Y,_,_,Visited,Turns,true,FinalPath):-
-    pass(X,Y,Pass,PassedX,PassedY),
-    append(Turns,[[X,Y,'Free','Pass'+Pass]],NewTurnsList),
-    search_backtrack(PassedX,PassedY,0,0,Visited,NewTurnsList,false,FinalPath).
-
+    append(Turns,[[X,Y],[NewX,NewY]],NewTurns),
+    
+    path_length(NewTurns, Len),
+    len_min(Min),
+    Len < Min,
+    retractall(min_len(_)),
+    assert(min_len(Len)),
+    
+    FinalPath = NewTurns,!.
+% Trying step
 search_backtrack(X,Y,Dx,Dy,Visited,Turns,PassPossible,FinalPath):-
     NewX is X + Dx,
     NewY is Y + Dy,
-    not(visited(NewX,NewY,Visited)),
-    not(o(NewX,NewY)),
-    
-    (
-    (NewDx is  1, NewDy is  0);
-    (NewDx is  0, NewDy is  1);
-    (NewDx is  0, NewDy is -1);
-    (NewDx is -1, NewDy is  0)
-    ),
 
-    in_boundaries(NewX+NewDx,NewY+NewDy),
-    union(Visited,[[X,Y]],NewVisited),
     (h(X,Y)->append(Turns,[[X,Y,'Free','running play']],NewTurns);
     append(Turns,[[X,Y]],NewTurns)),
-    search_backtrack(NewX,NewY,NewDx,NewDy,NewVisited,NewTurns,PassPossible,FinalPath).
     
-/*
-action(X,Y,_,Turns,_,FinalPath):-
-    not(o(X,Y)),
-    t(X,Y),
-    append(Turns,[[X,Y]],FinalPath).
-
-action(X,Y,PassPossible,Turns,Visited,FinalPath):-
-    not(o(X,Y)),
-    neighbour(X,Y,NeighbourX,NeighbourY),
-    append(Turns,[[X,Y]],NewTurns),
-    union(Visited,[[X,Y]],NewVisited),
-
-    not(visited(NeighbourX,NeighbourY,NewVisited)),
-    action(NeighbourX,NeighbourY,PassPossible,NewTurns,NewVisited,FinalPath).*/
+    start_search_backtrack(NewX,NewY,Visited,NewTurns,PassPossible,FinalPath).
+% Trying pass
+search_backtrack(X,Y,Dx,Dy,Visited,Turns,true,FinalPath):-
+    pass(X,Y,Dx,Dy,PassedX,PassedY),
+    direction(Pass,Dx,Dy),
+    append(Turns,[[X,Y,'Free','Pass'+Pass]],NewTurnsList),
+    start_search_backtrack(PassedX,PassedY,Visited,NewTurnsList,false,FinalPath).
