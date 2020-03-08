@@ -100,3 +100,36 @@ path_length([Step|Tail],Length):-
         path_length(Tail,Length);
         path_length(Tail,Len),
         Length is Len+1),!.
+
+% Finding all cells reachable from current, that are without orcs
+reachable_not_visited(X,Y,VisitedList,Cells):-
+    findall([RX,RY], reachable_not_visited(X,Y,VisitedList,RX,RY), C),
+    sort(C,Cells).
+reachable_not_visited(X,Y,VisitedList, RX,RY):-
+    neighbour(X,Y,RX,RY),
+    not(o(RX,RY)),
+    not(visited(RX,RY,VisitedList)).
+
+known([X,Y],[VisitedList,ReachableList],Val):-
+    known(X,Y,VisitedList,ReachableList,Val).
+known(X,Y,VisitedList,ReachableList,1):-
+    (
+        visited(X,Y,VisitedList);
+        visited(X,Y,ReachableList)
+    ),!.
+known(_,_,_,_,0).
+
+known_number([],_,_,0):-!.
+known_number([Cell|Rest],VisitedList,ReachableList,Number):-
+    known(Cell,[VisitedList,ReachableList],Val),
+    known_number(Rest, VisitedList, ReachableList, RestVal),
+    Number is Val + RestVal.
+
+visible(X,Y,VX,VY):-visible(X,Y,1,VX,VY).
+visible(X,Y,0,X,Y):-!.
+visible(X,Y,1,VX,VY):-neighbour(X,Y,VX,VY).
+
+visible(X,Y,2,VX,VY):-visible(X,Y,1,VX,VY).
+visible(X,Y,2,VX,VY):-
+    neighbour(X,Y,TmpX,TmpY),
+    neighbour(TmpX,TmpY,VX,VY).
