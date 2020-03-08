@@ -35,6 +35,7 @@ draw_field(_,Y):-
     Y == SizeY,!.
 
 draw_path(Path):-
+    write('\e[H\e[2J'),
     draw_path(0,0,Path),!.
 
 draw_path(X,Y,Path):-

@@ -85,12 +85,12 @@ pass(X,Y,Dx,Dy,HumanX,HumanY):-
         (
             % If we met human along the line of pass, pass is successful 
             % and coordinates of human are bounded to HumanX and HumanY
-            h(NewX,NewY),
+            h(NewX,NewY),!,
             HumanX is NewX,
             HumanY is NewY
         );
         pass(NewX,NewY,Dx,Dy,HumanX,HumanY)
-    ).
+    ),!.
 
 path_length([],0):-!.
 path_length([_|[]],0):-!.
