@@ -41,6 +41,7 @@ neighbour_with_diagonals(CurrentX,CurrentY,NeighbourX,NeighbourY):-
     NeighbourY - CurrentY #= -1),
     in_boundaries(NeighbourY,NeighbourX).
 
+visited(_,_,true).
 visited(X,Y,VisitList):-
     member([X,Y], VisitList),!.
 
@@ -114,6 +115,14 @@ reachable_not_visited(X,Y,VisitedList, RX,RY):-
     not(o(RX,RY)),
     not(visited(RX,RY,VisitedList)).
 
+reachable_visited(X,Y,VisitedList,Cells):-
+    findall([RX,RY], reachable_visited(X,Y,VisitedList,RX,RY), C),
+    sort(C,Cells).
+reachable_visited(X,Y,VisitedList, RX,RY):-
+    neighbour(X,Y,RX,RY),
+    not(o(RX,RY)),
+    visited(RX,RY,VisitedList).
+
 known([X,Y],[VisitedList,ReachableList],Val):-
     known(X,Y,VisitedList,ReachableList,Val).
 known(X,Y,VisitedList,ReachableList,1):-
@@ -147,3 +156,7 @@ max_visible(Radius,Number):-
 
 manhattan_distance(X,Y,TX,TY,Dist):-
     Dist is abs(X-TX) + abs(Y-TY).
+
+queue_push(Elem,Queue,Result):-
+    append(Queue,[Elem],Result).
+queue_pop([Elem|Queue],Elem,Queue).

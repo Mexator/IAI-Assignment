@@ -1,4 +1,4 @@
-:-["heuristics.pl","input.pl",library(apply)].
+:-["heuristics.pl","input.pl",library(apply),library(heaps)].
 search:-
     search(Path),
     format('Path found with my own algorithm: ~w\n',[Path]),!.
@@ -8,7 +8,8 @@ search(FinalPath):-
     search_for_td(0,0,[],ReachList,[],Turns,[TargetX,TargetY]),
 
     last(Turns,[X,Y]),
-    a_star_path_to(X,Y,TargetX,TargetY,_,Turns,FinalPath).
+    a_star_path_to(X,Y,TargetX,TargetY,_,Path),
+    append(Turns,Path,FinalPath).
 % No reachable cells
 search_for_td(X,Y,Visited,[],Turns,FinalTurns,TDCoords):-
     union(Visited,[[X,Y]],NewVisited),
@@ -31,11 +32,13 @@ search_for_td(X,Y,Visited,Reachable,Turns,FinalTurns,TDCoords):-
     (
         ReachableNow == [] -> 
             choose_cell(Reachable,[NewVisited,Reachable],_,NewX,NewY),
-            a_star_path_to(X,Y,NewX,NewY,Visited,NTurns,NewTurns);
+            append(Visited,[[NewX,NewY]],Allowed),
+            a_star_path_to(X,Y,NewX,NewY,Allowed,TmpTurns),
+            append(NTurns,TmpTurns,NewTurns);
             
             choose_cell(ReachableNow,[NewVisited,Reachable],_,NewX,NewY),
             NewTurns = NTurns
-        ),
+    ),
         
     union(Reachable,ReachableNow,Tmp),
     delete(Tmp, [NewX,NewY], NewReachable),
@@ -86,14 +89,22 @@ value(X,Y,[VisitedList,ReachableList],Val):-
     max_visible(Radius,MaxNumber),
     Val is 1 - (Len - Number)/MaxNumber,!.
 
-a_star_value(X,Y,X,Y,_,0).
-a_star_value(X,Y,TargetX,TargetY,AllowedList,Cost):-
+heuristic_value(X,Y,X,Y,_,0):-!.
+heuristic_value(X,Y,TargetX,TargetY,AllowedList,Cost):-
     visited(X,Y,AllowedList),
     manhattan_distance(X,Y,TargetX,TargetY,HeuristicCost),
     movement_cost(X,Y,MoveCost),
     Cost is HeuristicCost + MoveCost,!.
-a_star_value(_,_,_,_,_,inf).
+heuristic_value(_,_,_,_,_,10^9):-!.
 
+path_cost(Path,Cost):-
+    length(Path,Cost).
+a_star_value(Path,TargetX,TargetY,AllowedList,Cost):-
+    last(Path,[X,Y]),
+    heuristic_value(X,Y,TargetX,TargetY,AllowedList,H),
+    path_cost(Path,P),
+    Cost is  P + H.
+/*
 a_star_choose_cell([[X,Y]],TargetX,TargetY,AllowedList,Val,X,Y):-
     a_star_value(X,Y,TargetX,TargetY,AllowedList,Val),!.
 a_star_choose_cell([[X,Y]|Cells],TargetX,TargetY,AllowedList,MinVal,NewX,NewY):-
@@ -121,11 +132,58 @@ a_star_path_to(X,Y,TargetX,TargetY,AllowedList,AStarTurns,Turns,Path):-
     append(AStarTurns,[[X,Y]],NewAStarTurns),
     
     % TODO: FIX!!! TO VALUE?? Agent got stuck in walls
-    /*
+    
     spy([a_star_path_to]), search(X), draw_path(X).
-      */ 
+      
     reachable_not_visited(X,Y,AStarTurns,Cells),
-    % 
 
     a_star_choose_cell(Cells,TargetX,TargetY,AllowedList,_,NewX,NewY),
-    a_star_path_to(NewX, NewY, TargetX, TargetY, AllowedList, NewAStarTurns, Turns, Path).
+    a_star_path_to(NewX, NewY, TargetX, TargetY, AllowedList, NewAStarTurns, Turns, Path). */
+    a_star_path_to(FromX,FromY,FromX,FromY,_,[]):-!.
+    a_star_path_to(FromX,FromY,TargetX,TargetY,AllowedList,Path):-
+        Closed = [],
+        empty_heap(Open),
+        add_to_heap(Open, 0, [[FromX,FromY]], NewOpen),
+        a_star_loop(NewOpen,TargetX,TargetY,AllowedList,Closed,Path).
+
+a_star_loop([[]],_,_,_,_,_):-fail,!.  
+a_star_loop(Open,TargetX,TargetY,_,_,Path):-
+    print_open(Open),
+    get_from_heap(Open, _, TmpPath, _),
+    last(TmpPath, [X,Y]),
+    ([X,Y] == [TargetX,TargetY]->
+    Path = TmpPath).
+
+a_star_loop(Open,TargetX,TargetY,AllowedList,Closed,Path):-
+    print_open(Open),
+    get_from_heap(Open, _, TmpPath, PoppedOpen),
+    last(TmpPath, [X,Y]),
+
+    (member([X,Y],Closed)->
+        a_star_loop(PoppedOpen,TargetX,TargetY,AllowedList,Closed,Path);true),
+        
+    append([[X,Y]],Closed,NewClosed),
+
+    reachable_not_visited(X,Y,Closed,Succ1),
+    reachable_visited(X,Y,AllowedList,Succ2),
+    intersection(Succ1, Succ2, Successors),
+    
+    merge_with_successors(Successors,TmpPath,TargetX,TargetY,AllowedList,
+        PoppedOpen,NewOpen),
+    a_star_loop(NewOpen, TargetX, TargetY, AllowedList, NewClosed, Path).
+
+merge_with_successors([],_,_,_,_,Open,Open):-!.
+merge_with_successors([Successor|Rest],CurPath,TargetX,TargetY,
+    AllowedList,Open,NewOpen):-
+    append(CurPath,[Successor],NewPath),
+    a_star_value(NewPath,TargetX,TargetY,AllowedList,Cost),
+    (Cost < 10^9 ->
+    add_to_heap(Open, Cost, NewPath, TmpOpen);empty_heap(TmpOpen)),
+    merge_with_successors(Rest,CurPath,TargetX,TargetY,AllowedList,
+        TmpOpen,NewOpen).
+
+print_open(Open):-empty_heap(Open),!.
+print_open(Open):-
+    get_from_heap(Open, Cost, TmpPath, PoppedOpen),
+    format('~w ~a~n',[TmpPath,Cost]),
+    print_open(PoppedOpen).
