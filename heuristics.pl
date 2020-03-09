@@ -6,6 +6,10 @@ cell_free(X,Y):-
     not(o(X,Y)),
     not(t(X,Y)).
 
+movement_cost(X,Y,0):-
+    h(X,Y),!.
+movement_cost(_,_,1).
+
 in_boundaries(X,Y):-
     size(SizeX, SizeY),
     X < SizeX, Y < SizeY,
@@ -133,3 +137,13 @@ visible(X,Y,2,VX,VY):-visible(X,Y,1,VX,VY).
 visible(X,Y,2,VX,VY):-
     neighbour(X,Y,TmpX,TmpY),
     neighbour(TmpX,TmpY,VX,VY).
+
+max_visible(Number):-max_visible(1,Number).
+max_visible(0,1):-!.
+max_visible(Radius,Number):-
+    PrevRadius is Radius-1,
+    max_visible(PrevRadius,Rec),
+    Number is Radius*4 + Rec.
+
+manhattan_distance(X,Y,TX,TY,Dist):-
+    Dist is abs(X-TX) + abs(Y-TY).

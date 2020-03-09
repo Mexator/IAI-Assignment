@@ -9,9 +9,8 @@ backtracking_search_best:-
     format('Best path found with backtracking: ~w\n',[Elem]).
 
 backtracking_search_first:-
-    backtracking_search(Path),
+    backtracking_search(Path),!,
     format('First path found with backtracking: ~w\n',[Path]).
-
 backtracking_search(Path):-
     start_pos(X,Y),!,
     
