@@ -3,11 +3,14 @@
 
 run:-  
     make,
-    run(random_search),
-    run(backtracking_search_first).
-run(SearchPredicate):-
     write('Initial field layout:\n'),
     draw_field(),
+    run(random_search),
+    sleep(1),
+    run(backtracking_search_first),
+    sleep(1),
+    run(my_search).
+run(SearchPredicate):-
     get_time(TimeStart),
     call(SearchPredicate),!,
     get_time(TimeEnd),

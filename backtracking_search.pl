@@ -1,16 +1,26 @@
-:-["input.pl","heuristics.pl"].
+:-["input.pl","heuristics.pl","draw_field.pl"].
 
 :-dynamic(min_len/1).
 len_min(X):-min_len(X),!.
 
 backtracking_search_best:-
     findall(X,backtracking_search(X),L),
-    last(L, Elem),
-    format('Best path found with backtracking: ~w\n',[Elem]).
+    last(L, Path),
+    format('Best path found with backtracking: ~w\n',[Path]),
+    length(Path,NaiveLen),
+    Moves is NaiveLen - 1,
+    path_length(Path,Turns),
+    format('Path cost is: (~a turns, ~a moves)\n',[Turns,Moves]),
+    draw_path(0,0,Path).
 
 backtracking_search_first:-
     backtracking_search(Path),!,
-    format('First path found with backtracking: ~w\n',[Path]).
+    format('First path found with backtracking: ~w\n',[Path]),
+    length(Path,NaiveLen),
+    Moves is NaiveLen - 1,
+    path_length(Path,Turns),
+    format('Path cost is: (~a turns, ~a moves)\n',[Turns,Moves]),
+    draw_path(0,0,Path).
 backtracking_search(Path):-
     start_pos(X,Y),!,
     
@@ -49,8 +59,7 @@ start_search_backtrack(X,Y,Visited,TurnsList,true,FinalPath):-
     ),
 
     pass(X,Y,Dx,Dy,PassedX,PassedY),
-    direction(Pass,Dx,Dy),
-    append(TurnsList,[[X,Y,'Free','Pass'+Pass]],NewTurnsList),
+    append(TurnsList,[[X,Y]],NewTurnsList),
     union(Visited,[[X,Y]],NewVisited),
     start_search_backtrack(PassedX,PassedY,NewVisited,NewTurnsList,false,FinalPath).
 
@@ -74,7 +83,7 @@ search_backtrack(X,Y,Dx,Dy,Visited,Turns,PassPossible,FinalPath):-
     NewX is X + Dx,
     NewY is Y + Dy,
 
-    (h(X,Y)->append(Turns,[[X,Y,'Free','running play']],NewTurns);
+    (h(X,Y)->append(Turns,[[X,Y]],NewTurns);
     append(Turns,[[X,Y]],NewTurns)),
     
     start_search_backtrack(NewX,NewY,Visited,NewTurns,PassPossible,FinalPath).

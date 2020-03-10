@@ -100,11 +100,10 @@ pass(X,Y,Dx,Dy,HumanX,HumanY):-
 path_length([],0):-!.
 path_length([_|[]],0):-!.
 path_length([Step|Tail],Length):-
-    List = [_,_,'Free',_],
-    (List = Step->
-        path_length(Tail,Length);
-        path_length(Tail,Len),
-        Length is Len+1),!.
+    path_length(Tail,Len),
+    [X,Y] = Step,
+    movement_cost(X,Y,Cost),
+    Length is Len+Cost,!.
 
 % Finding all cells reachable from current, that are without orcs
 reachable_not_visited(X,Y,VisitedList,Cells):-

@@ -1,4 +1,4 @@
-:-["heuristics.pl"].
+:-["heuristics.pl","draw_field.pl"].
 
 random_search:-
     random_search(0,[]).
@@ -31,7 +31,8 @@ random_search(Attempt,BestPath):-
     Moves is NaiveLen-1,
     (Turns == 0 -> format('Path was not found with ~a attempts\n',Max);
     format('Best path (~a turns, ~a moves) was found in ~a attempts:\n ~w\n',
-        [Turns,Moves,Max,BestPath])),!.
+        [Turns,Moves,Max,BestPath]),
+        draw_path(BestPath)),!.
 
 is_winning(Path):-
     last(Path,Element),
@@ -74,11 +75,11 @@ random_pass(X,Y,TurnsList,FinalPath):-
     direction(Pass,Dx,Dy),
     (pass(X,Y,Dx,Dy,PassedX,PassedY),
     (
-        append(TurnsList,[[X,Y,'Free','Pass'+Pass]],NewTurnsList),
+        append(TurnsList,[[X,Y]],NewTurnsList),
         random_action(PassedX,PassedY,false,NewTurnsList,FinalPath)
     );
     (
-        append(TurnsList,[[X,Y,'Free','Pass'+Pass]],FinalPath),
+        append(TurnsList,[[X,Y]],FinalPath),
         path_length(TurnsList, Turn),
         format('Bad pass at turn ~a\n', Turn)
     )).  
@@ -98,7 +99,7 @@ random_pass(X,Y,TurnsList,FinalPath):-
             R==2 -> (NewY is Y+1, NewX is X);
             R==3 -> (NewY is Y, NewX is X-1)
         ),
-        (h(X,Y) -> append(TurnsList,[[X,Y,'Free','running play']],NewTurnsList);
+        (h(X,Y) -> append(TurnsList,[[X,Y]],NewTurnsList);
         append(TurnsList,[[X,Y]],NewTurnsList)),
         % If agent collides with the wall, retry the turn
         (in_boundaries(NewX,NewY) -> 
