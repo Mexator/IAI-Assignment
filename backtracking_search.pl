@@ -4,23 +4,31 @@
 len_min(X):-min_len(X),!.
 
 backtracking_search_best:-
+    get_time(TimeStart),
     findall(X,backtracking_search(X),L),
+    get_time(TimeEnd),
     last(L, Path),
     format('Best path found with backtracking: ~w\n',[Path]),
     length(Path,NaiveLen),
     Moves is NaiveLen - 1,
     path_length(Path,Turns),
     format('Path cost is: (~a turns, ~a moves)\n',[Turns,Moves]),
-    draw_path(0,0,Path).
+    draw_path(0,0,Path),
+    ElapsedTime is TimeEnd - TimeStart,
+    format('Elapsed time: ~4f s\n',[ElapsedTime]),!.
 
 backtracking_search_first:-
+    get_time(TimeStart),
     backtracking_search(Path),!,
+    get_time(TimeEnd),
     format('First path found with backtracking: ~w\n',[Path]),
     length(Path,NaiveLen),
     Moves is NaiveLen - 1,
     path_length(Path,Turns),
     format('Path cost is: (~a turns, ~a moves)\n',[Turns,Moves]),
-    draw_path(0,0,Path).
+    draw_path(0,0,Path),
+    ElapsedTime is TimeEnd - TimeStart,
+    format('Elapsed time: ~4f s\n',[ElapsedTime]),!.
 backtracking_search(Path):-
     start_pos(X,Y),!,
     

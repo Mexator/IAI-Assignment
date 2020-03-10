@@ -1,7 +1,11 @@
 :-["heuristics.pl","draw_field.pl"].
 
 random_search:-
-    random_search(0,[]).
+    get_time(TimeStart),
+    random_search(0,[]),
+    get_time(TimeEnd),
+    ElapsedTime is TimeEnd - TimeStart,
+    format('Elapsed time: ~4f s\n',[ElapsedTime]),!.
 
 random_search(Attempt,BestPath):-
     max_attempts(Max), Attempt < Max,

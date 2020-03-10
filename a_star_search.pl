@@ -1,12 +1,16 @@
 :-[library(apply),library(heaps),"heuristics.pl","input.pl","draw_field.pl"].
 my_search:-
+    get_time(TimeStart),
     my_search(Path),
+    get_time(TimeEnd),
     format('Path found with my own algorithm: ~w\n',[Path]),
     length(Path,NaiveLen),
     Moves is NaiveLen - 1,
     path_length(Path,Turns),
     format('Path cost is: (~a turns, ~a moves)\n',[Turns,Moves]),
-    draw_path(0,0,Path),!.
+    draw_path(0,0,Path),
+    ElapsedTime is TimeEnd - TimeStart,
+    format('Elapsed time: ~4f s\n',[ElapsedTime]),!.
 my_search(FinalPath):-
     
     reachable_not_visited(0,0,[],ReachList),

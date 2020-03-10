@@ -11,11 +11,6 @@ run:-
     sleep(1),
     run(my_search).
 run(SearchPredicate):-
-    get_time(TimeStart),
-    call(SearchPredicate),!,
-    get_time(TimeEnd),
-    ElapsedTime is TimeEnd - TimeStart,
-    format('Elapsed time: ~4f s\n',[ElapsedTime]).
-
+    call(SearchPredicate),!.
 % ...Because exit is more convenient
 exit:-halt.
