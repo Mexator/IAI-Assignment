@@ -1,4 +1,6 @@
-*
 !*.pl
-input.pl
-gen.py
+inputs*
+!gen.py
+report/*
+!report/*.tex
+!report/*.pdf
