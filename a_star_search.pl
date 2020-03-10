@@ -128,15 +128,18 @@ a_star_loop(Open,TargetX,TargetY,_,_,Path):-
     last(TmpPath, [X,Y]),
     ([X,Y] == [TargetX,TargetY]->
     Path = TmpPath).
-
 a_star_loop(Open,TargetX,TargetY,AllowedList,Closed,Path):-
     % print_open(Open),
     get_from_heap(Open, _, TmpPath, PoppedOpen),
     last(TmpPath, [X,Y]),
 
-    (member([X,Y],Closed)->
-        a_star_loop(PoppedOpen,TargetX,TargetY,AllowedList,Closed,Path);true),
-        
+    member([X,Y],Closed)->
+        a_star_loop(PoppedOpen,TargetX,TargetY,AllowedList,Closed,Path).
+a_star_loop(Open,TargetX,TargetY,AllowedList,Closed,Path):-
+    % print_open(Open),
+    get_from_heap(Open, _, TmpPath, PoppedOpen),
+    last(TmpPath, [X,Y]),
+       
     append([[X,Y]],Closed,NewClosed),
 
     reachable_not_visited(X,Y,Closed,Succ1),
