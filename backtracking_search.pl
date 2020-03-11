@@ -1,5 +1,5 @@
-:-["input.pl","heuristics.pl","draw_field.pl"].
-
+:-use_module(drawing).
+:-use_module(heuristics).
 :-dynamic(min_len/1).
 len_min(X):-min_len(X),!.
 
@@ -13,7 +13,7 @@ backtracking_search_best:-
     Moves is NaiveLen - 1,
     path_length(Path,Turns),
     format('Path cost is: (~a turns, ~a moves)\n',[Turns,Moves]),
-    draw_path(0,0,Path),
+    draw_path(Path),
     ElapsedTime is TimeEnd - TimeStart,
     format('Elapsed time: ~4f s\n',[ElapsedTime]),!.
 
@@ -26,14 +26,14 @@ backtracking_search_first:-
     Moves is NaiveLen - 1,
     path_length(Path,Turns),
     format('Path cost is: (~a turns, ~a moves)\n',[Turns,Moves]),
-    draw_path(0,0,Path),
+    draw_path(Path),
     ElapsedTime is TimeEnd - TimeStart,
     format('Elapsed time: ~4f s\n',[ElapsedTime]),!.
 backtracking_search(Path):-
-    start_pos(X,Y),!,
+    start_position(X,Y),!,
     
     retractall(min_len(_)),
-    size(SizeX,SizeY),
+    map_size(SizeX,SizeY),
     S is  SizeX * SizeY,
     assert(min_len(S)),
     
@@ -49,7 +49,7 @@ start_search_backtrack(X,Y,Visited,TurnsList,PassPossible,FinalPath):-
     NX is X + Dx,
     NY is Y + Dy,
     in_boundaries(NX,NY),
-    not(o(NX,NY)),
+    not(orc(NX,NY)),
     not(visited(NX,NY,Visited)),
     
     path_length(TurnsList, Len),
@@ -75,7 +75,7 @@ start_search_backtrack(X,Y,Visited,TurnsList,true,FinalPath):-
 search_backtrack(X,Y,Dx,Dy,_,Turns,_,FinalPath):-
     NewX is X + Dx,
     NewY is Y + Dy,
-    t(NewX,NewY),!,
+    target(NewX,NewY),!,
 
     append(Turns,[[X,Y],[NewX,NewY]],NewTurns),
     
@@ -91,7 +91,7 @@ search_backtrack(X,Y,Dx,Dy,Visited,Turns,PassPossible,FinalPath):-
     NewX is X + Dx,
     NewY is Y + Dy,
 
-    (h(X,Y)->append(Turns,[[X,Y]],NewTurns);
+    (human(X,Y)->append(Turns,[[X,Y]],NewTurns);
     append(Turns,[[X,Y]],NewTurns)),
     
     start_search_backtrack(NewX,NewY,Visited,NewTurns,PassPossible,FinalPath).

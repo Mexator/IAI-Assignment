@@ -1,6 +1,5 @@
-:-["draw_field.pl","random_search.pl",
-"backtracking_search.pl","a_star_search.pl"].
-
+:-["random_search.pl","backtracking_search.pl","a_star_search.pl"].
+:-use_module(drawing).
 run:-  
     make,
     write('Initial field layout:\n'),

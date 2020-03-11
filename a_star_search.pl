@@ -1,4 +1,6 @@
-:-[library(apply),library(heaps),"heuristics.pl","input.pl","draw_field.pl"].
+:-[library(apply),library(heaps)].
+:-use_module(drawing).
+:-use_module(heuristics).
 my_search:-
     get_time(TimeStart),
     my_search(Path),
@@ -8,7 +10,7 @@ my_search:-
     Moves is NaiveLen - 1,
     path_length(Path,Turns),
     format('Path cost is: (~a turns, ~a moves)\n',[Turns,Moves]),
-    draw_path(0,0,Path),
+    draw_path(Path),
     ElapsedTime is TimeEnd - TimeStart,
     format('Elapsed time: ~4f s\n',[ElapsedTime]),!.
 my_search(FinalPath):-
@@ -29,7 +31,7 @@ search_for_td(X,Y,Visited,[],Turns,FinalTurns,TDCoords):-
     ).
 % Touchdown was stepped on
 search_for_td(X,Y, _Visited,_Reachable, Turns,NewTurns, [X,Y]):-
-    t(X,Y),
+    target(X,Y),
     append(Turns, [[X,Y]], NewTurns).
 
 search_for_td(X,Y,Visited,Reachable,Turns,FinalTurns,TDCoords):-
@@ -85,8 +87,8 @@ choose_cell([[X,Y]|RestReachable],Known, MinVal,NewX,NewY):-
 
 my_inf(10^9).
 
-value(X,Y,_,0):-t(X,Y),!.
-value(X,Y,_,1):-o(X,Y),!.
+value(X,Y,_,0):-target(X,Y),!.
+value(X,Y,_,1):-orc(X,Y),!.
 value(X,Y,[VisitedList,ReachableList],Val):-
     Radius is 1,
     findall([VX,VY],visible(X,Y,Radius,VX,VY),List),

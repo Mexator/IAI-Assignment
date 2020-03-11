@@ -1,5 +1,6 @@
-:-["heuristics.pl","draw_field.pl"].
-
+:-use_module(drawing).
+:-use_module(heuristics).
+max_attempts(100).
 random_search:-
     get_time(TimeStart),
     random_search(0,[]),
@@ -42,10 +43,10 @@ is_winning(Path):-
     last(Path,Element),
     nth0(0,Element,X),
     nth0(1,Element,Y),
-    t(X,Y).
+    target(X,Y).
 
 random_search(Path):-
-    start_pos(X,Y),
+    start_position(X,Y),
     random_action(X,Y,true,[],Path).
 
 random_action(X,Y,PassPossible,TurnsList,FinalPath):-
@@ -103,7 +104,7 @@ random_pass(X,Y,TurnsList,FinalPath):-
             R==2 -> (NewY is Y+1, NewX is X);
             R==3 -> (NewY is Y, NewX is X-1)
         ),
-        (h(X,Y) -> append(TurnsList,[[X,Y]],NewTurnsList);
+        (human(X,Y) -> append(TurnsList,[[X,Y]],NewTurnsList);
         append(TurnsList,[[X,Y]],NewTurnsList)),
         % If agent collides with the wall, retry the turn
         (in_boundaries(NewX,NewY) -> 

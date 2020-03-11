@@ -1,6 +1,34 @@
+:- module(heuristics,[
+    orc/2,
+    human/2,
+    target/2,
+    cell_free/2,
+    in_boundaries/2,
+    map_size/2,
+    direction/3,
+    known_number/4,
+    win_condition/4,
+    lose_condition/4,
+    manhattan_distance/5,
+    max_visible/2,
+    movement_cost/3,
+    pass/6,
+    path_length/2,
+    reachable_not_visited/4,
+    reachable_visited/4,
+    start_position/2,
+    visible/5,
+    visited/3]).
 :-["input.pl",library(clpfd)].
 /* This file contains all general-purpose predicates that can be used 
  within different search algorithms*/
+
+orc(X,Y):-o(X,Y).
+human(X,Y):-h(X,Y).
+target(X,Y):-t(X,Y).
+start_position(X,Y):-start_pos(X,Y).
+map_size(SizeX,SizeY):-size(SizeX,SizeY).
+
 cell_free(X,Y):-
     not(h(X,Y)),
     not(o(X,Y)),
